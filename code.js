@@ -61,7 +61,7 @@ async function taskPayload() {
       "variant": "high_quality",
       "residual": true
     }
-  ]`
+    ]}`
     } else {
         return JSON.stringify(state.taskPayload, null, 2)
     }
