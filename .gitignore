@@ -2,9 +2,9 @@
 node_modules/*
 package-lock.json
 package.json
-
+alignment-wordless.json
 demo-assets-config.json
-# demo-assets.json
+demo-assets.json
 dev-plan-vanila.md
 progress.md
 Claude.md
