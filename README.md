@@ -171,18 +171,13 @@ No build process required. Simply edit files and refresh your browser.
 
 **Assets not loading**
 - Verify URL is accessible and returns valid JSON
-- Check CORS headers on remote assets
 - Ensure pre-signed URLs haven't expired
 
-**Alignment not appearing**
+**Stems not appearing**
 - Wait for task completion (can take 1-2 minutes)
 - Check API Console for error messages
 - Verify media URL is publicly accessible
 
-**Lyrics not syncing**
-- Ensure alignment data loaded successfully
-- Check browser console for timing errors
-- Verify media is playing
 
 ## Resources
 - [Live Demo](https://audioexplorer.github.io/AudioShake-Music-Stem-Separation-Demo/)
