@@ -39,8 +39,8 @@ const elements = {
     // Asset Loader
     uploadArea: document.getElementById('uploadArea'),
     fileInput: document.getElementById('fileInput'),
-    urlInput: document.getElementById('urlInput'),
-    loadUrlBtn: document.getElementById('loadUrlBtn'),
+    // urlInput: document.getElementById('urlInput'),
+    // loadUrlBtn: document.getElementById('loadUrlBtn'),
     loadDemoBtn: document.getElementById('loadDemoBtn'),
 
     assetSourceURLInput: document.getElementById('assetSourceURLInput'),
@@ -181,7 +181,7 @@ function setupEventListeners() {
     // Asset Loader
     elements.uploadArea.addEventListener('click', () => elements.fileInput.click());
     elements.fileInput.addEventListener('change', handleFileUpload);
-    elements.loadUrlBtn.addEventListener('click', handleURLLoad);
+    // elements.loadUrlBtn.addEventListener('click', handleURLLoad);
     elements.loadDemoBtn.addEventListener('click', loadDemoAssets);
 
     // Drag and Drop
@@ -432,18 +432,18 @@ async function loadAssetsFromFile(file) {
     }
 }
 
-async function handleURLLoad() {
-    const url = elements.urlInput.value.trim();
-    if (!url) return;
+// async function handleURLLoad() {
+//     // const url = elements.urlInput.value.trim();
+//     if (!url) return;
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        loadAssets(data.assets || data);
-    } catch (err) {
-        showToast(`Error loading URL: ${err.message}`);
-    }
-}
+//     try {
+//         const response = await fetch(url);
+//         const data = await response.json();
+//         loadAssets(data.assets || data);
+//     } catch (err) {
+//         showToast(`Error loading URL: ${err.message}`);
+//     }
+// }
 
 
 
@@ -498,25 +498,25 @@ function loadNewAssetFromSource() {
     };
 
     loadAssets(newAsset.assets);
-    // Proceed with asset creation or processing using `sourceURL`, `title`, and `format`
-    // console.log(`Asset created with URL: ${sourceURL}, Title: ${title}, MIME Type: ${format}`);
+
 }
 
-
+// Load demo assets for json file
 async function loadDemoAssets() {
     state.isDemo = true
-
-    const demoData = {
-        "assets": [
-            {
-                "src": "https://demos.audioshake.ai/demo-assets/shakeitup.mp3",
-                "title": "shakeitup.mp3",
-                "format": "audio/mpeg",
-                "expiry": null
-            }
-        ]
-    };
+    const response = await fetch("./assets/demo-assets.json");
+    const demoData = await response.json();
     loadAssets(demoData.assets);
+}
+
+//helper function to get the filename from the url
+function cleanTitle(title) {
+    title = title.replace(/[^a-zA-Z0-9]/g, ' ')
+    console.log(title);
+    // then remove the extension by finding the last word and removing it .wav, .mp3, .mp4, .flac, .mov, .aac
+    title = title.slice(0, title.length - 4);
+    title = title.replace(/\s+/g, ' ');
+    return title;
 }
 
 async function loadAssets(assets) {
@@ -560,6 +560,9 @@ function selectAsset(index) {
 
     clearAlignments()
     state.selectedAsset = state.assets[index];
+
+    // update the selected asset title
+    elements.mediaSection.querySelector('div.card-header > h2').innerHTML = "<h2>Selected Asset:</h2> " + cleanTitle(state.selectedAsset.title)
 
     // todo update the alignment filter to be fuzzy 
     elements.filterSource.value = state.selectedAsset.title.split(".")[0]
@@ -1323,14 +1326,3 @@ function showToast(message, duration = 3000) {
 // Initialize on load
 document.addEventListener('DOMContentLoaded', init);
 
-// retired 
-// function createWave(elementID = 'audioPlayer') {
-//     const wave = WaveSurfer.create({
-//         container: '#wave',
-//         backend: 'MediaElement',   // <-- critical
-//         mediaControls: false,
-//         media: document.getElementById(elementID),
-//         waveColor: '#999',
-//         progressColor: '#f00',
-//     });
-// }
