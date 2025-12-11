@@ -18,50 +18,62 @@ async function loadSwiftCodeMD(mdfile, YOUR_API_KEY) {
     const response = await fetch(mdfile);   // load file
     const markdown = await response.text();       // read raw MD
 
+    // Parse the JSON string payload into an object
+    let payloadObj;
+    try {
+        const payloadStr = await taskPayload(); // get the payload string
+        payloadObj = JSON.parse(payloadStr);
+    } catch (e) {
+        console.error("Error parsing payload for Swift transformation:", e);
+        payloadObj = {};
+    }
+
     // replace all ${api_key} and ${asset_url}
     let injectedMD = markdown
         .replace(/\$\{api_key\}/g, YOUR_API_KEY)
         // .replace(/\$\{asset_url\}/g, sourceURL)
-        .replace(/\$\{payload\}/g, await transformPayload(state.taskPayload));
+        // replace ${payload} with swift dictionary
+        .replace(/\$\{payload\}/g, transformPayload(payloadObj));
 
     return injectedMD;
 }
 
 
-async function transformPayload(payload) {
 
-    /**
-     * 
-     * todo transform json payload to swift dict
-     * 
-     * Example payload:
-      [
-            "url": videoURL,
-            "targets": [[
-                "model": "alignment",
-                "formats": ["json"],
-                "language": "en"
-            ]]
-     * 
-     */
-
-}
 
 
 async function taskPayload() {
     if (state.taskPayload == null) {
         return `{
-  "url": "https://demos.spatial-explorer.com/demo-assets/Wordless.wav",
+  "url": "https://demos.audioshake.ai/demo-assets/Audiio_Drakeford_The_Venture_Stronger_Than_One.wav",
   "targets": [
     {
       "model": "vocals",
       "formats": [
         "mp3"
       ],
-      "variant": "high_quality",
-      "residual": true
+      "variant": "high_quality"
+    },
+    {
+      "model": "bass",
+      "formats": [
+        "mp3"
+      ]
+    },
+    {
+      "model": "drums",
+      "formats": [
+        "mp3"
+      ]
+    },
+    {
+      "model": "piano",
+      "formats": [
+        "mp3"
+      ]
     }
-    ]}`
+  ]
+}`
     } else {
         return JSON.stringify(state.taskPayload, null, 2)
     }
@@ -72,25 +84,11 @@ async function updateCodeExample(lang) {
     let YOUR_API_KEY = (api.hasAPIKey) ? api.apiKey : "YOUR_API_KEY";
     let sourceURL = (state.selectedAsset != undefined) ? state.selectedAsset.src : 'https://example.com/audio.mp3'
 
-    let payload = "";
-    if (payload == undefined) {
-        payload = JSON.stringify(state.taskPayload, null, 2)
-    } else {
-        payload = `{
-    url: 'https://example.com/audio.mp3',
-        targets: [
-            {
-                model: 'alignment',
-                formats: ['json'],
-                language: 'en'
-            }
-        ]
-    }`
-    }
-
+    // cleaned up unused local payload logic
 
     const examples = {
         swift: await loadSwiftCodeMD("./code/swift.md", YOUR_API_KEY),
+        ios: await loadSwiftCodeMD("./code/ios.md", YOUR_API_KEY),
         javascript: await loadCodeMD("./code/javascript.md", YOUR_API_KEY),
         node: await loadCodeMD("./code/node.md", YOUR_API_KEY),
         curl: await loadCodeMD("./code/curl.md", YOUR_API_KEY),
@@ -111,11 +109,30 @@ function copyCode() {
     });
 }
 
-// returns swift literal from js object
-async function transformPayload(payload) {
-    if (!payload) return "";
+/***
+ * 
+ * goal transform any json to swift dictionary
+ [
+            "url": videoURL,
+            "targets": [
+                [
+                    "model": "vocals",
+                    "formats": ["mp3"],
+                    "variant": "high_quality",
+                    "residual": true
+                ]
+            ]
+]
+  
+ */
 
-    const toSwiftLiteral = (value, indent = 8) => {
+
+// returns swift literal from js object
+function transformPayload(payload) {
+    if (!payload && payload !== false && payload !== 0) return ""; // stricter check
+
+    // Updated default indent to 4 to match top-level swift.md structure
+    const toSwiftLiteral = (value, indent = 4) => {
         const pad = " ".repeat(indent);
 
         // Array → Swift array literal
@@ -154,3 +171,4 @@ async function transformPayload(payload) {
 
     return toSwiftLiteral(payload);
 }
+

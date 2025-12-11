@@ -1,5 +1,10 @@
+# NOTE: The API key used in this example is for demonstration purposes only.
+# In a production environment, you must implement secure authentication and
+# avoid hard-coding API keys in client-side or publicly accessible code.
+
 import requests
 import time
+
 
 # Create task
 response = requests.post(

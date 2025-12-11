@@ -1,3 +1,9 @@
+<!-- 
+NOTE: The API key shown here is provided solely for demonstration.
+For any production deployment, you should implement a secure authentication flow and avoid hard-coding API keys in client or frontend code.
+ -->
+
+
 const API_KEY = "${api_key}";
 const payload = ${payload};
 
