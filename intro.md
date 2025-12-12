@@ -1,4 +1,4 @@
-### **AudioShake API Alignment Demo**
+### **AudioShake Music Stem Separation Demo**
 
 This demo shows how use the AudioShake Tasks API to create music stems.</br> To get started, simply **authorize** this app with your API key, load an asset into our media player and create your first task using our task builder. 
 

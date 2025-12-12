@@ -1,5 +1,19 @@
 // V17
 // Application State
+// navigation to section
+const appSections = ["assetsSection", "mediaSection", "modelSelectionSection", "stemsPlaceholder"]
+
+
+
+// navigation to sections
+function goToSection(id) {
+    let yPos = document.getElementById(id).getBoundingClientRect().top;
+
+    window.scrollBy({
+        top: yPos,
+        behavior: 'smooth'   // Optional. Smooth scroll.
+    });
+}
 
 
 const state = {
@@ -456,6 +470,11 @@ function getFilenameFromUrlRegex(url) {
 
 function loadNewAssetFromSource() {
     const sourceURL = elements.assetSourceURLInput.value.trim();
+
+    if (!sourceURL) {
+        showToast('Please enter a URL');
+        return;
+    };
     // todo get the filename from the url 
     const title = getFilenameFromUrlRegex(sourceURL) || "Untitled";
     const allowedExtensions = ['mp3', 'mp4', 'wav', 'flac', 'mov', 'aac'];
@@ -523,6 +542,7 @@ async function loadAssets(assets) {
     state.assets = assets;
     renderAssets();
     elements.assetsSection.style.display = 'block';
+    goToSection("assetsSection");
     showToast(`Loaded ${assets.length} assets`);
     loadAlignments()
 }
@@ -561,12 +581,13 @@ function selectAsset(index) {
     //show task selection
     elements.modelSelectionSection.style.display = 'block';
     elements.mediaSection.style.display = 'block';
+    goToSection("mediaSection");
 
     clearAlignments()
     state.selectedAsset = state.assets[index];
 
     // update the selected asset title
-    elements.mediaSection.querySelector('div.card-header > h2').innerHTML = "<h2>Selected Asset:</h2> " + cleanTitle(state.selectedAsset.title)
+    elements.mediaSection.querySelector('div.card-header > h2').innerHTML = "Selected Asset: " + state.selectedAsset.title;
 
     // todo update the alignment filter to be fuzzy 
     elements.filterSource.value = state.selectedAsset.title.split(".")[0]
@@ -752,7 +773,7 @@ async function createSeparationTask() {
         });
 
         showToast('Separation completed!');
-
+        goToSection("stemsPlaceholder");
         loadStems(completedTask);
 
     } catch (err) {
